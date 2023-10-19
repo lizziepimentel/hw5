@@ -1,16 +1,105 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="styles.css">
-<title>Tic Tac Toe</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <title>Tic Tac Toe</title>
 </head>
-
-<body>
-	<div id="board" class="board"></div>
-	<button id="resetbutton">New Game</button>
 	
+<body>
+    <div class="board" id="board"></div>
+
+    <button id="resetbutton">New Game</button> 
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="dyna.js"></script>
+	
+    <script>
+        let currtPlayer = 'X'; // X starts
+		let board = ['', '', '', '', '', '', '', '', ''];
+
+		// Initialize an array for the board
+        let gameOver = false;
+
+        function buildBoard() {
+            const boardElement = document.getElementById('board');
+			
+			//  <div class="square" id="0-9">
+            for (let i = 0; i < 9; i++) {
+                const square = document.createElement('div');
+                square.className = 'square';
+				square.id = i.toString();
+                square.addEventListener('click', () => userInteraction(i));
+                boardElement.append(square);
+            }
+        }
+
+        function checkWin() {
+            const winBoard = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+
+            for (let i = 0; i < winBoard.length; i++) {
+                const [a, b, c] = winBoard[i];
+
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    gameOver = true;
+                    alert('Player ' + currtPlayer + ' wins! Game over.');
+                    break;
+                }
+            }
+        }
+
+        function checkStalemate() {
+            let isStalemate = true;
+
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    isStalemate = false;
+                    break;
+                }
+            }
+
+            if (isStalemate) {
+                gameOver = true;
+                alert("It's a stalemate! Game over.");
+            }
+        }
+
+        function userInteraction(index) {
+            if (!board[index] && !gameOver) {
+                board[index] = currtPlayer;
+                document.getElementById(index.toString()).innerText = currtPlayer;
+                checkWin();
+                checkStalemate();
+                currtPlayer = switchPlayer(currtPlayer);
+            }
+        }
+
+        function switchPlayer(player) {
+            if (player === 'X') {
+                return 'O';
+            } else {
+                return 'X';
+            }
+        }
+
+        // Event listener for the reset button
+        document.getElementById('resetbutton').addEventListener('click', () => {
+            currtPlayer = 'X';
+            board = Array(9).fill('');
+            gameOver = false;
+
+            // Reset the visual representation of the board
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = ''; // Clear the board
+            buildBoard(); // Rebuild the board
+            alert('New game started!');
+        });
+
+        // Call the buildBoard function to initialize the board
+        buildBoard();
+    </script>
 </body>
 </html>
